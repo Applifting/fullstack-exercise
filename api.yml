@@ -1,0 +1,420 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Applifting Blog Engine
+# servers:
+#   - url: https://candidates.applifting.cz/v1
+paths:
+  /login:
+    post:
+      summary: Sign in into the application
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  format: password
+
+      responses:
+        "201":
+          description: Access token detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessToken"
+        "400":
+          description: Invalid login credentials
+          content:
+            application/json:
+              example:
+                code: INVALID_CREDENTIALS
+                message: Password is invalid
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
+  /articles:
+    get:
+      summary: List of all articles
+      operationId: listArticles
+      tags:
+        - Blog
+      responses:
+        "200":
+          description: Article list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Article"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
+    post:
+      summary: Create an article
+      operationId: createArticle
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      tags:
+        - Blog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleDetail"
+      responses:
+        "200":
+          description: Detail of the created article
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Article"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /articles/{articleId}:
+    get:
+      summary: Article detail with content and comments
+      operationId: getArticle
+      tags:
+        - Blog
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          description: The id of an article to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Article detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleDetail"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
+    patch:
+      summary: Update article detail
+      operationId: updateArticle
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      tags:
+        - Blog
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          description: The id of an article to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleDetail"
+      responses:
+        "200":
+          description: Updated article detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArticleDetail"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+
+    delete:
+      summary: Delete article
+      operationId: deleteArticle
+      tags:
+        - Blog
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          description: The id of an article to remove
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Article no longer exists
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+        "403":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /comments:
+    post:
+      summary: Create comment
+      tags:
+        - Comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Comment"
+
+      responses:
+        "201":
+          description: Detail of the created comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
+  /comments/{commentId}/vote/up:
+    post:
+      summary: Upvote comment
+      tags:
+        - Comments
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: The id of the comment to update
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Updated comment detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
+  /comments/{commentId}/vote/down:
+    post:
+      summary: Downvote comment
+      tags:
+        - Comments
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: The id of the comment to update
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Updated comment detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+  /tenants:
+    post:
+      summary: Create tenant
+      tags:
+        - Multitenancy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tenant"
+
+      responses:
+        "201":
+          description: Detail of the created tenant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+
+  /tenants/{tenantId}:
+    get:
+      summary: Info for a specific tenant
+      tags:
+        - Multitenancy
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          description: The id of the tenant to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Tenant detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      description: Access token acquired from the /login call
+      type: http
+      scheme: bearer
+    ApiKeyAuth:
+      description: API key for multitenancy
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  responses:
+    ApiKeyInvalidError:
+      description: API key is missing or invalid
+      content:
+        application/json:
+          example:
+            code: API_KEY_INVALID
+            message: API key missing or invalid
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          example:
+            code: UNAUTHORIZED
+            message: Access token is missing, invalid or expired
+
+  schemas:
+    Article:
+      type: object
+      properties:
+        articleId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Lorem Ipsum
+        perex:
+          type: string
+          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+    ArticleDetail:
+      type: object
+      properties:
+        articleId:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          example: Lorem Ipsum
+        perex:
+          type: string
+          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+        content:
+          type: string
+          format: markdown
+          example: >
+            # Lorem Ipsum
+
+            **Lorem Ipsum** is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+
+        comments:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/Comment"
+    Comment:
+      type: object
+      required:
+        - articleId
+        - author
+        - content
+      properties:
+        commentId:
+          type: string
+          format: uuid
+          readOnly: true
+        articleId:
+          type: string
+          format: uuid
+        author:
+          type: string
+          example: Jan Novak
+        content:
+          type: string
+          example: This article is on point and very inspirational.
+        postedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        score:
+          type: integer
+          example: 42
+          readOnly: true
+    Tenant:
+      type: object
+      properties:
+        tenantId:
+          type: string
+          format: uuid
+          readOnly: true
+        apiKey:
+          type: string
+          format: uuid
+          description: API key to be used in the `api-key` header
+          readOnly: true
+        name:
+          type: string
+          description: Human readable name of the tenant
+          example: Jan Novak
+        password:
+          type: string
+          format: password
+          description: Authentication password of the tenant
+          example: correct horse battery staple
+          writeOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        lastUsedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    AccessToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Use this when requesting authenticated API endpoints
+          format: uuid
+          readOnly: true
+        expires_in:
+          type: integer
+          description: Number of seconds before the access_token expires
+          readOnly: true
+          example: 3600
+        token_type:
+          type: string
+          description: Token type. Will always be bearer
+          example: bearer
+
+security:
+  - ApiKeyAuth: []
