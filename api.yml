@@ -2,12 +2,41 @@ openapi: "3.0.0"
 info:
   version: 1.0.0
   title: Applifting Blog Engine
+  description: >-
+    This OpenAPI specification describes APIs available in the Applifing Blog Engine application.
+
+
+    **Following APIs are exposed:**
+
+    - Authentication - This API is used for login and access token acquisition
+
+    - Blog - This API is a CRUD over blog entries
+
+    - Comments - This API is used for comment creation and voting
+
+    - Image - This API serves as an image store. It is assumed that images are uploaded during article creation.
+
+    - Multitenancy - This API allows multiple blog instances to be active in a single application.
+
+
+    **Authorization**
+
+
+    All APIs except the Multitenancy API, are protected using API-KEY Token,
+    which has been given to the candidate during the exercise introduction. 
+    API-KEY Token MUST be sent like so `X-API-KEY: my-x-api-key` in the HTTP header.
+
+
+    Comments, Blog and Images APIs are also protected using the Access Token acquired from the `/login` EndPoint.
+    Access Token MUST be sent like so  `Authorization: my-access-token` in the HTTP header.
 # servers:
 #   - url: https://candidates.applifting.cz/v1
 paths:
   /login:
     post:
       summary: Sign in into the application
+      security:
+        - ApiKeyAuth: []
       tags:
         - Authentication
       requestBody:
@@ -46,6 +75,9 @@ paths:
       operationId: listArticles
       tags:
         - Blog
+      parameters:
+        - $ref: "#/components/parameters/offset"
+        - $ref: "#/components/parameters/limit"
       responses:
         "200":
           description: Article list
@@ -61,9 +93,6 @@ paths:
     post:
       summary: Create an article
       operationId: createArticle
-      security:
-        - BearerAuth: []
-        - ApiKeyAuth: []
       tags:
         - Blog
       requestBody:
@@ -78,9 +107,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Article"
+                $ref: "#/components/schemas/ArticleDetail"
         "401":
           $ref: "#/components/responses/ApiKeyInvalidError"
         "403":
@@ -93,13 +120,7 @@ paths:
       tags:
         - Blog
       parameters:
-        - name: articleId
-          in: path
-          required: true
-          description: The id of an article to retrieve
-          schema:
-            type: string
-            format: uuid
+        - $ref: "#/components/parameters/articleId"
       responses:
         "200":
           description: Article detail
@@ -113,19 +134,10 @@ paths:
     patch:
       summary: Update article detail
       operationId: updateArticle
-      security:
-        - BearerAuth: []
-        - ApiKeyAuth: []
       tags:
         - Blog
       parameters:
-        - name: articleId
-          in: path
-          required: true
-          description: The id of an article to update
-          schema:
-            type: string
-            format: uuid
+        - $ref: "#/components/parameters/articleId"
       requestBody:
         required: true
         content:
@@ -149,17 +161,8 @@ paths:
       operationId: deleteArticle
       tags:
         - Blog
-      security:
-        - BearerAuth: []
-        - ApiKeyAuth: []
       parameters:
-        - name: articleId
-          in: path
-          required: true
-          description: The id of an article to remove
-          schema:
-            type: string
-            format: uuid
+        - $ref: "#/components/parameters/articleId"
       responses:
         "204":
           description: Article no longer exists
@@ -196,12 +199,7 @@ paths:
       tags:
         - Comments
       parameters:
-        - name: commentId
-          in: path
-          required: true
-          description: The id of the comment to update
-          schema:
-            type: string
+        - $ref: "#/components/parameters/commentId"
       responses:
         "201":
           description: Updated comment detail
@@ -218,12 +216,7 @@ paths:
       tags:
         - Comments
       parameters:
-        - name: commentId
-          in: path
-          required: true
-          description: The id of the comment to update
-          schema:
-            type: string
+        - $ref: "#/components/parameters/commentId"
       responses:
         "201":
           description: Updated comment detail
@@ -233,9 +226,54 @@ paths:
                 $ref: "#/components/schemas/Comment"
         "401":
           $ref: "#/components/responses/ApiKeyInvalidError"
+
+  /images:
+    post:
+      summary: Upload an image
+      tags:
+        - Images
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+
+      responses:
+        "201":
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ImageInfo"
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
+  /images/{imageId}:
+    get:
+      summary: Download image
+      tags:
+        - Images
+      parameters:
+        - $ref: "#/components/parameters/imageId"
+      responses:
+        "200":
+          description: Image file
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
+
   /tenants:
     post:
       summary: Create tenant
+      security: []
       tags:
         - Multitenancy
       requestBody:
@@ -256,16 +294,11 @@ paths:
   /tenants/{tenantId}:
     get:
       summary: Info for a specific tenant
+      security: []
       tags:
         - Multitenancy
       parameters:
-        - name: tenantId
-          in: path
-          required: true
-          description: The id of the tenant to retrieve
-          schema:
-            type: string
-            format: uuid
+        - $ref: "#/components/parameters/tenantId"
       responses:
         "200":
           description: Tenant detail
@@ -275,6 +308,59 @@ paths:
                 $ref: "#/components/schemas/Tenant"
 
 components:
+  parameters:
+    tenantId:
+      name: tenantId
+      in: path
+      required: true
+      description: Id of the tenant to retrieve
+      schema:
+        type: string
+        format: uuid
+    imageId:
+      name: imageId
+      in: path
+      required: true
+      description: Id of the image to retrieve
+      schema:
+        type: string
+        format: uuid
+    articleId:
+      name: articleId
+      in: path
+      required: true
+      description: Id of an article
+      schema:
+        type: string
+        format: uuid
+    commentId:
+      name: commentId
+      in: path
+      required: true
+      description: Id of an comment
+      schema:
+        type: string
+        format: uuid
+    offset:
+      name: offset
+      in: query
+      required: false
+      description: Number of items to skip during pagination
+      schema:
+        default: 0
+        minimum: 0
+        type: number
+    limit:
+      name: limit
+      in: query
+      required: false
+      description: >-
+        Number of items to return per page.
+        All items are returned if `limit` is omitted.
+      schema:
+        minimum: 0
+        type: number
+
   securitySchemes:
     BearerAuth:
       description: Access token acquired from the /login call
@@ -285,6 +371,7 @@ components:
       type: apiKey
       in: header
       name: X-API-KEY
+
   responses:
     ApiKeyInvalidError:
       description: API key is missing or invalid
@@ -302,6 +389,27 @@ components:
             message: Access token is missing, invalid or expired
 
   schemas:
+    Pagination:
+      type: object
+      properties:
+        offset:
+          type: number
+          description: Number of items skipped during pagination
+        limit:
+          type: number
+          description: Number of items returned
+        total:
+          type: number
+          description: Total number of items
+    ArticleList:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Article"
     Article:
       type: object
       properties:
@@ -314,32 +422,31 @@ components:
         perex:
           type: string
           example: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+        createdAt:
+          readOnly: true
+          type: string
+          format: date-time
+        lastUpdatedAt:
+          readOnly: true
+          type: string
+          format: date-time
     ArticleDetail:
-      type: object
-      properties:
-        articleId:
-          type: string
-          format: uuid
-          readOnly: true
-        title:
-          type: string
-          example: Lorem Ipsum
-        perex:
-          type: string
-          example: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        content:
-          type: string
-          format: markdown
-          example: >
-            # Lorem Ipsum
+      allOf:
+        - $ref: "#/components/schemas/Article"
+        - type: object
+          properties:
+            content:
+              type: string
+              format: markdown
+              example: >
+                # Lorem Ipsum
 
-            **Lorem Ipsum** is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-
-        comments:
-          type: array
-          readOnly: true
-          items:
-            $ref: "#/components/schemas/Comment"
+                **Lorem Ipsum** is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+            comments:
+              type: array
+              readOnly: true
+              items:
+                $ref: "#/components/schemas/Comment"
     Comment:
       type: object
       required:
@@ -368,6 +475,18 @@ components:
           type: integer
           example: 42
           readOnly: true
+    ImageInfo:
+      type: object
+      required:
+        - imageId
+      properties:
+        imageId:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          example: "screenshot.png"
     Tenant:
       type: object
       properties:
@@ -418,3 +537,4 @@ components:
 
 security:
   - ApiKeyAuth: []
+  - BearerAuth: []
