@@ -1,0 +1,64 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Applifting Blog Engine fullstack exercise websocket specification",
+  "required": ["changeType"],
+  "properties": {
+    "changeType": {
+      "$id": "#/properties/changeType",
+      "type": "string",
+      "title": "Notification type",
+      "default": "",
+      "examples": ["commentCreated"],
+      "enum": ["commentCreated", "commentUpVoted", "commentDownVoted"]
+    },
+    "comment": {
+      "$id": "#/properties/comment",
+      "type": "object",
+      "title": "The Comment Schema",
+      "required": ["commentId", "author", "content", "createdAt", "score"],
+      "properties": {
+        "commentId": {
+          "$id": "#/properties/comment/properties/commentId",
+          "type": "string",
+          "title": "Unique identifier of te comment",
+          "default": "",
+          "examples": ["4d34dffa-c5d5-4af3-afcf-2c60c862ade6"]
+        },
+        "author": {
+          "$id": "#/properties/comment/properties/author",
+          "type": "string",
+          "title": "Author of the comment",
+          "default": "",
+          "examples": ["Petr"],
+          "pattern": "^(.*)$"
+        },
+        "content": {
+          "$id": "#/properties/comment/properties/content",
+          "type": "string",
+          "title": "Content of the comment",
+          "default": "",
+          "examples": ["I like trains"],
+          "pattern": "^(.*)$"
+        },
+        "createdAt": {
+          "$id": "#/properties/comment/properties/createdAt",
+          "type": "string",
+          "title": "ISO8601 formatted date of when the comment was created",
+          "default": "",
+          "examples": ["2020-02-18T16:24:47.832013"],
+          "format": "date-time"
+        },
+        "score": {
+          "$id": "#/properties/comment/properties/score",
+          "type": "integer",
+          "title": "Score of the comment",
+          "default": 0,
+          "examples": [0]
+        }
+      }
+    }
+  }
+}
