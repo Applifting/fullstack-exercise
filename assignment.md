@@ -90,6 +90,8 @@
 - check out the WS API [here](ws.json)
 - implement the [wireframes](https://www.figma.com/file/VagZOrr3TjTAxGCpCUTSrO/Applifting-|-Full-Stack-Cvičení "[clickable](https://www.figma.com/proto/VagZOrr3TjTAxGCpCUTSrO/Applifting-%7C-Full-Stack-Cvi%C4%8Den%C3%AD?node-id=2%3A3&viewport=148%2C245%2C0.12103988230228424&scaling=min-zoom")
 
+### User Perspective
+
 - Article List ![Article List Wireframe](https://www.figma.com/file/VagZOrr3TjTAxGCpCUTSrO/Applifting-Full-Stack-Cvi%C4%8Den%C3%AD?node-id=2%3A3)
 
   - display a list of all articles, ordered by date descending
@@ -118,3 +120,24 @@
 - Add Comment voting functionality
   - add the ability to vote on comments (+/-)
   - display score on each comment
+
+### Admin Perspective
+
+- Login Screen ![Login Screen Wireframe](https://www.figma.com/proto/VagZOrr3TjTAxGCpCUTSrO/Applifting-%7C-Full-Stack-Cvi%C4%8Den%C3%AD?node-id=14%3A2693&scaling=min-zoom)
+
+  - implement login
+  - after successful login redirect to next screen
+  - on unsuccesful login display error message
+
+- My Article List ![My Article List Wireframe](https://www.figma.com/proto/VagZOrr3TjTAxGCpCUTSrO/Applifting-%7C-Full-Stack-Cvi%C4%8Den%C3%AD?node-id=9%3A0&scaling=min-zoom)
+
+  - display table of all articles
+  - display a button to create new article
+  - implement edit and delete buttons
+  - optionally implement article ordering
+
+- Article Detail View ![Article Detail Wireframe](https://www.figma.com/proto/VagZOrr3TjTAxGCpCUTSrO/Applifting-%7C-Full-Stack-Cvi%C4%8Den%C3%AD?node-id=14%3A2622&scaling=min-zoom)
+
+  - display editable sections of article
+  - implement publish button
+  - use some existing Markdown editor, unless you really want to implement your own
