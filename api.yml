@@ -48,6 +48,8 @@ paths:
               required:
                 - password
               properties:
+                username:
+                  type: string
                 password:
                   type: string
                   format: password
