@@ -5,6 +5,6 @@
 - [Assignment](https://github.com/Applifting/fullstack-exercise/blob/master/assignment.md)
 - [Prototype](https://www.figma.com/proto/VagZOrr3TjTAxGCpCUTSrO/Applifting-%7C-Full-Stack-Cvi%C4%8Den%C3%AD?node-id=2%3A3&viewport=148%2C245%2C0.12103988230228424&scaling=min-zoom)
 - [Screens](https://www.figma.com/file/VagZOrr3TjTAxGCpCUTSrO/Applifting-|-Full-Stack-Cvičení)
-- [OpenAPI specification](https://editor.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2FApplifting%2Ffullstack-exercise%2Fmaster%2Fapi.yml%3Ftoken%3DAASONT5XK6EB7TPNH5EHMDC7CBNIO) ([raw api.yml](https://github.com/Applifting/fullstack-exercise/blob/master/api.yml))
+- [OpenAPI specification](https://github.com/Applifting/fullstack-exercise/blob/master/api.yml)
 - [JSON schema specification for WebSocket API](https://github.com/Applifting/fullstack-exercise/blob/master/ws.json)
 - [Deployed Backend](https://fullstack.k8s.applifting.cz) `https://fullstack.k8s.applifting.cz`

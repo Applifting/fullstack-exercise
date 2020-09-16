@@ -271,6 +271,18 @@ paths:
           description: Image file
         "401":
           $ref: "#/components/responses/ApiKeyInvalidError"
+          
+    delete:
+      summary: Delete image
+      tags:
+        - Images
+      parameters:
+        - $ref: "#/components/parameters/imageId"
+      responses:
+        "204":
+          description: Image no longer exists
+        "401":
+          $ref: "#/components/responses/ApiKeyInvalidError"
 
   /tenants:
     post:
@@ -424,6 +436,9 @@ components:
         perex:
           type: string
           example: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+        imageId:
+          type: string
+          format: uuid
         createdAt:
           readOnly: true
           type: string
