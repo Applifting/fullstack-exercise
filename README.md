@@ -7,4 +7,4 @@
 - [Screens](https://www.figma.com/file/VagZOrr3TjTAxGCpCUTSrO/Applifting-|-Full-Stack-Cvičení)
 - [OpenAPI specification](https://github.com/Applifting/fullstack-exercise/blob/master/api.yml)
 - [JSON schema specification for WebSocket API](https://github.com/Applifting/fullstack-exercise/blob/master/ws.json)
-- [Deployed Backend](https://fullstack.k8s.applifting.cz) `https://fullstack.k8s.applifting.cz`
+- [Deployed Backend](https://fullstack.exercise.applifting.cz) `https://fullstack.exercise.applifting.cz`
