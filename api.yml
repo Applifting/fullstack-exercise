@@ -29,8 +29,8 @@ info:
 
     Comments, Blog and Images APIs are also protected using the Access Token acquired from the `/login` EndPoint.
     Access Token MUST be sent like so  `Authorization: my-access-token` in the HTTP header.
-# servers:
-#   - url: https://candidates.applifting.cz/v1
+servers:
+  - url: https://fullstack.exercise.applifting.cz
 paths:
   /login:
     post:
