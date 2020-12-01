@@ -23,12 +23,14 @@ info:
 
 
     All APIs except the Multitenancy API, are protected using API-KEY Token,
-    which has been given to the candidate during the exercise introduction. 
+    which has either been given to the candidate during the exercise introduction or the candidate can create
+    it themselves using the Multitenancy API `POST /tenants` endpoint. If you were already given a token, please prefer 
+    to use it instead of creating a new one.  
     API-KEY Token MUST be sent like so `X-API-KEY: my-x-api-key` in the HTTP header.
 
 
     Comments, Blog and Images APIs are also protected using the Access Token acquired from the `/login` EndPoint.
-    Access Token MUST be sent like so  `Authorization: my-access-token` in the HTTP header.
+    Access Token MUST be sent like so `Authorization: my-access-token` in the HTTP header.
 servers:
   - url: https://fullstack.exercise.applifting.cz
 paths:
