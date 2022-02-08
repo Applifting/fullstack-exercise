@@ -52,6 +52,9 @@
   - votes should identified by IP address and unique
 - add the option to make commenting and voting realtime
   - via GraphQL Subscriptions or WebSockets
+- present your ability to test the code
+  - you don't have to test everything
+  - just add few unit, integration and E2E tests
 
 # Frontend Developer Exercise
 
