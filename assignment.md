@@ -144,3 +144,67 @@
   - display editable sections of article
   - implement publish button
   - use some existing Markdown editor, unless you really want to implement your own
+
+## Multitenancy and accessing the API
+
+The Applifting Blog Engine has **multitenancy API** - multiple users can use the same application and access their own blog data separately from everyone else. In other words, your content (articles, comments, images) will be available only to you.
+
+In order to access your own “space” in the app, you need to create a tenant first. 
+
+**Creating a tenant**
+
+To do so, send the following request to the API:
+
+`POST https://fullstack.exercise.applifting.cz/tenants`
+
+The request should contain a JSON body with the following fields:
+
+```json
+{
+	"name": "your-new-tenant-name",
+	"password": "your-new-tenant-password"
+}
+```
+
+The response will contain `apiKey` field. The API key is used to identify your tenant when using any other API endpoint - make sure to write it down!
+
+**Logging in**
+
+You can now log in with your new tenant. Send the following request:
+
+`POST https://fullstack.exercise.applifting.cz/login`
+
+With this body:
+
+```json
+{
+	"username": "your-new-tenant-name",
+	"password": "your-new-tenant-password"
+}
+```
+
+You will also need to identify your tenant - this is done by adding a new header to the request:
+
+```json
+X-API-KEY: "your-tenant-API-key"
+```
+
+If successful, you will receive a response with `access_token` field. This token expires in an hour and is used to access protected API capabilities (e.g. uploading images).
+
+**Accessing protected resource**
+
+Whenever you want to access a protected endpoint, you will need to supply:
+
+- `apiKey` to identify your tenant
+- `access_token` to authorize yourself
+
+For example, if you want to upload a new image:
+
+`POST https://fullstack.exercise.applifting.cz/images`
+
+you will need to provide the following headers:
+
+```json
+X-API-KEY: "your-tenant-API-key"
+Authorization: "your-access-key"
+```
