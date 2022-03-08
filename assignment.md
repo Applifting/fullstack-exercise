@@ -185,7 +185,7 @@ With this body:
 
 You will also need to identify your tenant - this is done by adding a new header to the request:
 
-```json
+```
 X-API-KEY: "your-tenant-API-key"
 ```
 
@@ -204,7 +204,7 @@ For example, if you want to upload a new image:
 
 you will need to provide the following headers:
 
-```json
+```
 X-API-KEY: "your-tenant-API-key"
 Authorization: "your-access-key"
 ```
