@@ -168,6 +168,8 @@ The request should contain a JSON body with the following fields:
 
 The response will contain `apiKey` field. The API key is used to identify your tenant when using any other API endpoint - make sure to write it down!
 
+**NOTE**: The key serves purely as an identifier and as such is not considered to be a secret. That means you can store it in your repository without worrying about security.
+
 **Logging in**
 
 You can now log in with your new tenant. Send the following request:
